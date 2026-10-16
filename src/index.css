@@ -1,0 +1,189 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  --bg: #f5f6f3;
+  --surface: #ffffff;
+  --sunken: #eceee9;
+  --ink: #1d2320;
+  --muted: #66706a;
+  --faint: #9aa29d;
+  --line: #e1e4df;
+  --accent: #1f6f66;
+  --accent-ink: #ffffff;
+  --accent-soft: #ddede9;
+  --doing: #b7791f;
+  --doing-soft: #f8eedb;
+  --todo: #8a938e;
+  --todo-soft: #eceee9;
+  --danger: #b4423a;
+  --danger-soft: #f7e3e0;
+  --shadow: 0 1px 2px rgb(29 35 32 / 0.06), 0 4px 16px -6px rgb(29 35 32 / 0.12);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #131715;
+  --surface: #1a1f1c;
+  --sunken: #202623;
+  --ink: #e6eae7;
+  --muted: #97a19b;
+  --faint: #66706a;
+  --line: #2a312d;
+  --accent: #5db8aa;
+  --accent-ink: #0f1a18;
+  --accent-soft: #1c3330;
+  --doing: #e2aa4e;
+  --doing-soft: #382d1a;
+  --todo: #77817b;
+  --todo-soft: #252b28;
+  --danger: #e07a70;
+  --danger-soft: #3a2220;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-doing: var(--doing);
+  --color-doing-soft: var(--doing-soft);
+  --color-todo: var(--todo);
+  --color-todo-soft: var(--todo-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, sans-serif;
+  --shadow-card: var(--shadow);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Thin scrollbars that recede until needed */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+/* The flow band: segments ease into their new widths when a card changes column. */
+.flow-seg {
+  transition: flex-grow 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flow-seg[data-status='done'] {
+  background-image: repeating-linear-gradient(
+    115deg,
+    transparent 0 10px,
+    rgb(255 255 255 / 0.14) 10px 20px
+  );
+  background-size: 200% 100%;
+  animation: flow 6s linear infinite;
+}
+
+@keyframes flow {
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes land {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.just-done {
+  animation: land 700ms ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.toast {
+  animation: toast-in 180ms ease-out;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+.pop-in {
+  animation: pop-in 140ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* BlockNote: blend into the page instead of looking like an embedded widget */
+.bn-container .bn-editor {
+  background: transparent;
+  font-family: var(--font-sans);
+}
+
+.bn-container[data-color-scheme] {
+  --bn-colors-editor-background: transparent;
+  --bn-colors-editor-text: var(--ink);
+  --bn-colors-menu-background: var(--surface);
+  --bn-colors-menu-text: var(--ink);
+  --bn-colors-tooltip-background: var(--sunken);
+  --bn-colors-tooltip-text: var(--ink);
+  --bn-colors-hovered-background: var(--sunken);
+  --bn-colors-selected-background: var(--accent-soft);
+  --bn-colors-border: var(--line);
+  --bn-colors-side-menu: var(--faint);
+  --bn-colors-highlights-gray-background: var(--sunken);
+  --bn-font-family: var(--font-sans);
+  --bn-border-radius: 8px;
+}
+
+.bn-block-content[data-content-type='heading'] {
+  font-family: var(--font-display);
+}
