@@ -1,6 +1,6 @@
 # Akış
 
-Görevlerini, notlarını ve alışkanlıklarını tek yerde tuttuğun, Notion benzeri kişisel planlama uygulaması.
+Görevlerini, notlarını ve alışkanlıklarını tek yerde tuttuğun kişisel planlama uygulaması.
 
 ## Çalıştırma
 
