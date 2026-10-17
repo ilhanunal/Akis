@@ -20,3 +20,11 @@ export function useApplyTheme() {
     document.documentElement.dataset.theme = resolved
   }, [resolved])
 }
+
+/** `spellcheck` is inherited, so setting it on <html> covers the editor, inputs and textareas alike. */
+export function useApplySpellcheck() {
+  const on = useSettings((s) => s.spellcheck)
+  useEffect(() => {
+    document.documentElement.spellcheck = on
+  }, [on])
+}

@@ -6,7 +6,7 @@ import { CommandPalette } from './components/common/CommandPalette'
 import { Toasts } from './components/common/Toasts'
 import { TaskModalHost } from './components/kanban/TaskModal'
 import { useUI } from './store/ui'
-import { useApplyTheme } from './lib/theme'
+import { useApplySpellcheck, useApplyTheme } from './lib/theme'
 import { TodayView } from './views/TodayView'
 import { BoardView } from './views/BoardView'
 import { CalendarView } from './views/CalendarView'
@@ -19,6 +19,7 @@ const DashboardView = lazy(() => import('./views/DashboardView').then((m) => ({ 
 
 function Layout() {
   useApplyTheme()
+  useApplySpellcheck()
   const setDrawer = useUI((s) => s.setDrawer)
   return (
     <div className="flex min-h-screen">

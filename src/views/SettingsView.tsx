@@ -26,7 +26,7 @@ function Row({ title, description, children }: { title: string; description: str
 }
 
 export function SettingsView() {
-  const { name, setName, theme, setTheme } = useSettings()
+  const { name, setName, theme, setTheme, spellcheck, setSpellcheck } = useSettings()
   const toast = useUI((s) => s.toast)
   const fileRef = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
@@ -61,6 +61,25 @@ export function SettingsView() {
             </button>
           ))}
         </div>
+      </Row>
+
+      <Row
+        title="Yazım denetimi"
+        description="Açıkken tarayıcı, yanlış sandığı kelimelerin altını kırmızıyla çizer. Tarayıcın İngilizce sözlük kullanıyorsa doğru Türkçe kelimeler de işaretlenebilir."
+      >
+        <button
+          role="switch"
+          aria-checked={spellcheck}
+          aria-label="Yazım denetimi"
+          onClick={() => setSpellcheck(!spellcheck)}
+          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${spellcheck ? 'bg-accent' : 'bg-line'}`}
+        >
+          <span
+            className={`absolute left-0.5 top-0.5 size-5 rounded-full bg-surface shadow-sm transition-transform ${
+              spellcheck ? 'translate-x-5' : ''
+            }`}
+          />
+        </button>
       </Row>
 
       <Row

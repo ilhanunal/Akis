@@ -17,7 +17,7 @@ export function serializeData() {
     pages: usePages.getState().pages,
     habits: useHabits.getState().habits,
     events: useActivity.getState().events,
-    settings: { name: useSettings.getState().name, theme: useSettings.getState().theme },
+    settings: { name: useSettings.getState().name, theme: useSettings.getState().theme, spellcheck: useSettings.getState().spellcheck },
   }
 }
 
@@ -31,8 +31,9 @@ export function restoreData(data: unknown) {
   usePages.setState({ pages: d.pages })
   useHabits.setState({ habits: Array.isArray(d.habits) ? d.habits : [] })
   useActivity.setState({ events: Array.isArray(d.events) ? d.events : [] })
-  const settings = d.settings as { name?: string; theme?: Theme } | undefined
-  if (settings) useSettings.setState({ name: settings.name ?? '', theme: settings.theme ?? 'system' })
+  const settings = d.settings as { name?: string; theme?: Theme; spellcheck?: boolean } | undefined
+  if (settings)
+    useSettings.setState({ name: settings.name ?? '', theme: settings.theme ?? 'system', spellcheck: settings.spellcheck ?? false })
   useSettings.setState({ seeded: true })
 }
 
