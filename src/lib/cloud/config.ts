@@ -1,0 +1,28 @@
+import { createClient } from '@supabase/supabase-js'
+
+/** The two people who can sign in. Each has a workspace of their own; "ortak" is shared. */
+export const PEOPLE = [
+  { id: 'ilhan', name: 'İlhan', email: 'ilhan@akis-planla.netlify.app', color: '#1F6F66' },
+  { id: 'sedef', name: 'Sedef', email: 'sedef@akis-planla.netlify.app', color: '#A04E7B' },
+] as const
+
+export type PersonId = (typeof PEOPLE)[number]['id']
+export type WorkspaceId = PersonId | 'ortak'
+
+export const WORKSPACES: { id: WorkspaceId; name: string; title: string; within: string; color: string }[] = [
+  { id: 'ilhan', name: 'İlhan', title: "İlhan'ın alanı", within: "İlhan'ın alanındaki", color: PEOPLE[0].color },
+  { id: 'sedef', name: 'Sedef', title: "Sedef'in alanı", within: "Sedef'in alanındaki", color: PEOPLE[1].color },
+  { id: 'ortak', name: 'Ortak', title: 'Ortak alan', within: 'Ortak alandaki', color: '#B7791F' },
+]
+
+export const personByEmail = (email?: string) => PEOPLE.find((p) => p.email === email?.toLowerCase())
+
+const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
+const key = import.meta.env.VITE_SUPABASE_KEY as string | undefined
+
+/**
+ * Without these variables the app runs as before: everything stays in this browser.
+ * With them, data lives in Supabase and only the people above can sign in.
+ */
+export const supabase = url && key ? createClient(url, key) : null
+export const cloudEnabled = supabase !== null

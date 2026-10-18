@@ -6,6 +6,8 @@ import { resetData } from '../lib/backup'
 import { downloadBackup, restoreFromFile } from '../lib/backupWeb'
 import { PageHeader } from '../components/common/PageHeader'
 import { Modal } from '../components/common/Modal'
+import { cloudEnabled, WORKSPACES } from '../lib/cloud/config'
+import { useCloud } from '../store/cloud'
 
 const THEMES: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'light', label: 'Açık', icon: Sun },
@@ -31,19 +33,24 @@ export function SettingsView() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [error, setError] = useState('')
+  const workspace = WORKSPACES.find((w) => w.id === useCloud((s) => s.workspace))
+  // In cloud mode backup, restore and reset act on the open workspace only.
+  const scope = cloudEnabled && workspace ? workspace.within : 'Bu tarayıcıdaki'
 
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Ayarlar" />
 
-      <Row title="Adın" description="Bugün ekranındaki selamlamada kullanılır.">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Adın"
-          className="w-56 rounded-lg border border-line bg-surface px-3 py-2 outline-none focus:border-accent"
-        />
-      </Row>
+      {!cloudEnabled && (
+        <Row title="Adın" description="Bugün ekranındaki selamlamada kullanılır.">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Adın"
+            className="w-56 rounded-lg border border-line bg-surface px-3 py-2 outline-none focus:border-accent"
+          />
+        </Row>
+      )}
 
       <Row title="Tema" description="Sistem seçeneği cihazının ayarını izler.">
         <div role="radiogroup" aria-label="Tema" className="inline-flex rounded-lg bg-sunken p-0.5">
@@ -84,7 +91,11 @@ export function SettingsView() {
 
       <Row
         title="Yedekle"
-        description="Verilerin yalnızca bu tarayıcıda durur. Başka cihaza taşımak ya da güvende tutmak için yedek dosyası indir."
+        description={
+          cloudEnabled
+            ? `${scope} görevleri, sayfaları ve alışkanlıkları dosyaya indir ya da dosyadan bu alana geri yükle.`
+            : 'Verilerin yalnızca bu tarayıcıda durur. Başka cihaza taşımak ya da güvende tutmak için yedek dosyası indir.'
+        }
       >
         <div className="flex flex-wrap gap-2">
           <button
@@ -128,7 +139,14 @@ export function SettingsView() {
         )}
       </Row>
 
-      <Row title="Verileri sıfırla" description="Tüm görevleri, sayfaları ve alışkanlıkları bu tarayıcıdan siler. Geri alınamaz.">
+      <Row
+        title="Verileri sıfırla"
+        description={
+          cloudEnabled
+            ? `${scope} tüm görevleri, sayfaları ve alışkanlıkları ikiniz için de siler. Geri alınamaz.`
+            : 'Tüm görevleri, sayfaları ve alışkanlıkları bu tarayıcıdan siler. Geri alınamaz.'
+        }
+      >
         <button
           onClick={() => setConfirmReset(true)}
           className="rounded-lg border border-danger/40 px-3 py-2 text-sm text-danger hover:bg-danger-soft"
@@ -139,7 +157,9 @@ export function SettingsView() {
 
       {confirmReset && (
         <Modal onClose={() => setConfirmReset(false)} label="Verileri sıfırla" className="max-w-sm p-5">
-          <h2 className="font-display text-xl font-semibold">Tüm veriler silinsin mi?</h2>
+          <h2 className="font-display text-xl font-semibold">
+            {cloudEnabled && workspace ? `${workspace.within} her şey silinsin mi?` : 'Tüm veriler silinsin mi?'}
+          </h2>
           <p className="mt-2 text-sm text-muted">
             Görevler, sayfalar, alışkanlıklar ve ilerleme geçmişi silinir. Önce yedek indirmen önerilir.
           </p>

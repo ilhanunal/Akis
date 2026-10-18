@@ -4,6 +4,8 @@ import { Check, Plus } from 'lucide-react'
 import { useTasks } from '../store/tasks'
 import { useHabits } from '../store/habits'
 import { useSettings } from '../store/settings'
+import { useCloud } from '../store/cloud'
+import { PEOPLE, WORKSPACES } from '../lib/cloud/config'
 import { useUI } from '../store/ui'
 import { dayKey, fmt, greeting, isOverdue, todayKey } from '../lib/dates'
 import { habitStreak } from '../lib/stats'
@@ -27,7 +29,11 @@ export function TodayView() {
   const addTask = useTasks((s) => s.addTask)
   const habits = useHabits((s) => s.habits)
   const toggleHabit = useHabits((s) => s.toggleToday)
-  const name = useSettings((s) => s.name)
+  const localName = useSettings((s) => s.name)
+  const person = useCloud((s) => s.person)
+  const workspace = useCloud((s) => s.workspace)
+  const name = PEOPLE.find((p) => p.id === person)?.name ?? localName
+  const viewing = workspace && workspace !== person ? WORKSPACES.find((w) => w.id === workspace) : undefined
   const toast = useUI((s) => s.toast)
   const [draft, setDraft] = useState('')
 
@@ -59,6 +65,12 @@ export function TodayView() {
           {greeting()}
           {name ? `, ${name}` : ''}
         </h1>
+        {viewing && (
+          <p className="mt-2 flex items-center gap-2 text-sm text-muted">
+            <span className="size-2 rounded-full" style={{ background: viewing.color }} aria-hidden />
+            {viewing.title} gösteriliyor
+          </p>
+        )}
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_18rem]">

@@ -12,6 +12,10 @@ import { BoardView } from './views/BoardView'
 import { CalendarView } from './views/CalendarView'
 import { HabitsView } from './views/HabitsView'
 import { SettingsView } from './views/SettingsView'
+import { cloudEnabled } from './lib/cloud/config'
+import { useCloud } from './store/cloud'
+import { LoginScreen } from './components/cloud/LoginScreen'
+import { ImportPrompt, WorkspaceStatus } from './components/cloud/Workspace'
 
 // The editor and charts are the heaviest dependencies; load them only when those screens open.
 const PageView = lazy(() => import('./views/PageView').then((m) => ({ default: m.PageView })))
@@ -33,22 +37,38 @@ function Layout() {
         </div>
         <main className="px-4 py-8 md:px-10 md:py-12">
           <Suspense fallback={<p className="text-muted">Yükleniyor…</p>}>
-            <Outlet />
+            {cloudEnabled ? (
+              <WorkspaceStatus>
+                <Outlet />
+              </WorkspaceStatus>
+            ) : (
+              <Outlet />
+            )}
           </Suspense>
         </main>
       </div>
       <TaskModalHost />
       <CommandPalette />
       <Toasts />
+      {cloudEnabled && <ImportPrompt />}
     </div>
   )
+}
+
+/** In cloud mode nothing but the sign-in screen is shown until one of the two people signs in. */
+function CloudGate() {
+  useApplyTheme()
+  const person = useCloud((s) => s.person)
+  if (person === undefined) return <div className="min-h-screen bg-bg" />
+  if (person === null) return <LoginScreen />
+  return <Layout />
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
+        <Route element={cloudEnabled ? <CloudGate /> : <Layout />}>
           <Route index element={<TodayView />} />
           <Route path="pano" element={<BoardView />} />
           <Route path="takvim" element={<CalendarView />} />

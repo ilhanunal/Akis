@@ -26,6 +26,18 @@ Yayına hazır sürüm için `npm run build`. Çıktı `dist/` klasörüne yazı
 
 Her şey tarayıcının `localStorage` alanında durur; sunucu ya da hesap yok. Başka bir cihaza geçmek veya yedek almak için **Ayarlar → Yedeği indir / Yedekten geri yükle**.
 
+## Veritabanı modu (iki kişilik)
+
+`VITE_SUPABASE_URL` ve `VITE_SUPABASE_KEY` tanımlıysa uygulama Supabase'e bağlanır:
+girişte İlhan / Sedef seçilir, şifreyle girilir; her kişinin kendi alanı ve bir Ortak alan vardır,
+değişiklikler diğer kişinin ekranına anında düşer. Tanımlı değilse her şey eskisi gibi tarayıcıda kalır.
+
+1. Supabase'de proje aç, SQL Editor'da `supabase/schema.sql` dosyasını çalıştır.
+2. Authentication → Users → Add user ile `ilhan@akis-planla.netlify.app` ve `sedef@akis-planla.netlify.app`
+   kullanıcılarını şifreleriyle oluştur ("Auto Confirm User" işaretli). Sign ups'ı kapat.
+3. Netlify → Environment variables: `VITE_SUPABASE_URL` (Project URL) ve `VITE_SUPABASE_KEY` (publishable key), sonra yeniden yayınla.
+   Yerelde aynı değerleri `.env.local` dosyasına yaz.
+
 ## İleride mobil uygulama için
 
 Kod, bir gün mobil uygulamaya (React Native ya da Capacitor) taşınabilecek şekilde ayrıldı:

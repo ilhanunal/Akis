@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { storage } from '../lib/storage'
+import { dataStorage } from '../lib/storage'
 import type { Status, Task } from '../types'
 import { uid } from '../lib/id'
 import { dayKey, todayKey } from '../lib/dates'
@@ -88,7 +88,7 @@ export const useTasks = create<TasksState>()(
           }
         }),
     }),
-    { name: 'akis-tasks', storage },
+    { name: 'akis-tasks', storage: dataStorage },
   ),
 )
 

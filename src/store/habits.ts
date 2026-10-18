@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { storage } from '../lib/storage'
+import { dataStorage } from '../lib/storage'
 import type { Habit } from '../types'
 import { uid } from '../lib/id'
 import { todayKey } from '../lib/dates'
@@ -42,6 +42,6 @@ export const useHabits = create<HabitsState>()(
         set((s) => ({ habits: s.habits.map((h) => (h.id === id ? { ...h, log } : h)) }))
       },
     }),
-    { name: 'akis-habits', storage },
+    { name: 'akis-habits', storage: dataStorage },
   ),
 )

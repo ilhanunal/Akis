@@ -3,3 +3,5 @@ dist
 tsconfig.tsbuildinfo
 # Claude Code local settings
 .claude/
+.env
+.env.*

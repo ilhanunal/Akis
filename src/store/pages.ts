@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { storage } from '../lib/storage'
+import { dataStorage } from '../lib/storage'
 import type { Page } from '../types'
 import { uid } from '../lib/id'
 import { useTasks } from './tasks'
@@ -56,6 +56,6 @@ export const usePages = create<PagesState>()(
         set((s) => ({ pages: s.pages.map((p) => (p.id === id ? { ...p, parentId } : p)) }))
       },
     }),
-    { name: 'akis-pages', storage },
+    { name: 'akis-pages', storage: dataStorage },
   ),
 )

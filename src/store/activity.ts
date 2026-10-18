@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { storage } from '../lib/storage'
+import { dataStorage } from '../lib/storage'
 import type { ActivityEvent } from '../types'
 import { uid } from '../lib/id'
 
@@ -23,6 +23,6 @@ export const useActivity = create<ActivityState>()(
           return { events: s.events.filter((_, i) => i !== idx) }
         }),
     }),
-    { name: 'akis-activity', storage },
+    { name: 'akis-activity', storage: dataStorage },
   ),
 )

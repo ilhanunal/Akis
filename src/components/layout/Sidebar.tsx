@@ -2,6 +2,8 @@ import { NavLink } from 'react-router-dom'
 import { CalendarDays, Search, Settings, SquareKanban, Sprout, Sun, TrendingUp, X } from 'lucide-react'
 import { useUI } from '../../store/ui'
 import { PageTree } from './PageTree'
+import { cloudEnabled } from '../../lib/cloud/config'
+import { AccountFooter, WorkspaceSwitcher } from '../cloud/Workspace'
 
 export const NAV = [
   { to: '/', label: 'Bugün', icon: Sun },
@@ -56,6 +58,7 @@ export function Sidebar() {
           </button>
         </div>
         <div className="px-3">
+          {cloudEnabled && <WorkspaceSwitcher onSwitch={close} />}
           <button
             onClick={() => {
               close()
@@ -86,6 +89,7 @@ export function Sidebar() {
             <Settings className="size-[18px]" />
             Ayarlar
           </NavLink>
+          {cloudEnabled && <AccountFooter />}
         </div>
       </aside>
     </>
