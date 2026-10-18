@@ -17,8 +17,9 @@ export const WORKSPACES: { id: WorkspaceId; name: string; title: string; within:
 
 export const personByEmail = (email?: string) => PEOPLE.find((p) => p.email === email?.toLowerCase())
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const key = import.meta.env.VITE_SUPABASE_KEY as string | undefined
+// Supabase's Data API page shows the URL with "/rest/v1/" appended; the client needs the bare project URL.
+const url = import.meta.env.VITE_SUPABASE_URL?.trim().replace(/\/(rest\/v1\/?)?$/, '').replace(/\/$/, '')
+const key = import.meta.env.VITE_SUPABASE_KEY?.trim()
 
 /**
  * Without these variables the app runs as before: everything stays in this browser.
