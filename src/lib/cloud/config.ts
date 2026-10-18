@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 
 /** The two people who can sign in. Each has a workspace of their own; "ortak" is shared. */
 export const PEOPLE = [
-  { id: 'ilhan', name: 'İlhan', email: 'ilhan@akis-planla.netlify.app', color: '#1F6F66' },
-  { id: 'sedef', name: 'Sedef', email: 'sedef@akis-planla.netlify.app', color: '#A04E7B' },
+  { id: 'ilhan', name: 'İlhan', email: 'ilhan@akis.com', color: '#1F6F66' },
+  { id: 'sedef', name: 'Sedef', email: 'sedef@akis.com', color: '#A04E7B' },
 ] as const
 
 export type PersonId = (typeof PEOPLE)[number]['id']

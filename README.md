@@ -33,7 +33,7 @@ girişte İlhan / Sedef seçilir, şifreyle girilir; her kişinin kendi alanı v
 değişiklikler diğer kişinin ekranına anında düşer. Tanımlı değilse her şey eskisi gibi tarayıcıda kalır.
 
 1. Supabase'de proje aç, SQL Editor'da `supabase/schema.sql` dosyasını çalıştır.
-2. Authentication → Users → Add user ile `ilhan@akis-planla.netlify.app` ve `sedef@akis-planla.netlify.app`
+2. Authentication → Users → Add user ile `ilhan@akis.com` ve `sedef@akis.com`
    kullanıcılarını şifreleriyle oluştur ("Auto Confirm User" işaretli). Sign ups'ı kapat.
 3. Netlify → Environment variables: `VITE_SUPABASE_URL` (Project URL) ve `VITE_SUPABASE_KEY` (publishable key), sonra yeniden yayınla.
    Yerelde aynı değerleri `.env.local` dosyasına yaz.

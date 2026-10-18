@@ -28,7 +28,7 @@ create trigger items_touch before update on public.items
 -- Yalnızca bu iki hesap okuyup yazabilir. E-postalar src/lib/cloud/config.ts ile aynı olmalı.
 create or replace function public.is_member() returns boolean
 language sql stable as $$
-  select coalesce(auth.jwt() ->> 'email', '') in ('ilhan@akis-planla.netlify.app', 'sedef@akis-planla.netlify.app')
+  select coalesce(auth.jwt() ->> 'email', '') in ('ilhan@akis.com', 'sedef@akis.com')
 $$;
 
 alter table public.items enable row level security;
