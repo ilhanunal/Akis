@@ -4,7 +4,7 @@
 create table if not exists public.items (
   id text primary key,
   workspace text not null check (workspace in ('ilhan', 'sedef', 'ortak')),
-  kind text not null check (kind in ('task', 'page', 'habit', 'event')),
+  kind text not null check (kind in ('task', 'page', 'habit', 'event', 'garden')),
   data jsonb not null,
   client_id text,
   updated_by uuid default auth.uid(),
@@ -12,6 +12,10 @@ create table if not exists public.items (
 );
 
 create index if not exists items_workspace_idx on public.items (workspace);
+
+-- Bahçe eklendiğinde (Ekim 2026) tür listesine 'garden' girdi; eski kurulumları da günceller.
+alter table public.items drop constraint if exists items_kind_check;
+alter table public.items add constraint items_kind_check check (kind in ('task', 'page', 'habit', 'event', 'garden'));
 
 create or replace function public.touch_item() returns trigger
 language plpgsql as $$

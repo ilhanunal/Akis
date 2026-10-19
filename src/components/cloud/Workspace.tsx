@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { CloudAlert, LogOut } from 'lucide-react'
 import { PEOPLE, WORKSPACES } from '../../lib/cloud/config'
 import { signOut, switchWorkspace } from '../../lib/cloud/auth'
@@ -11,6 +11,8 @@ import { useHabits } from '../../store/habits'
 import { useUI } from '../../store/ui'
 import { Modal } from '../common/Modal'
 import { Avatar } from './LoginScreen'
+import { useBalance } from '../../store/garden'
+import { Coins } from '../garden/Garden'
 
 /** Tabs for the three workspaces: each person's own and the shared one. */
 export function WorkspaceSwitcher({ onSwitch }: { onSwitch?: () => void }) {
@@ -47,12 +49,18 @@ export function AccountFooter() {
   const personId = useCloud((s) => s.person)
   const person = PEOPLE.find((p) => p.id === personId)
   const sync = useCloud((s) => s.sync)
+  const balance = useBalance(personId)
   if (!person) return null
   return (
     <div className="flex items-center gap-2 px-2 py-1.5 text-sm">
       <Avatar name={person.name} color={person.color} size="sm" />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{person.name}</p>
+        <p className="flex items-center gap-2 font-medium">
+          <span className="truncate">{person.name}</span>
+          <NavLink to="/bahce" className="text-xs font-normal text-muted hover:text-ink" aria-label="Coin bakiyen, bahçeyi aç">
+            <Coins value={balance} />
+          </NavLink>
+        </p>
         <p className={`flex items-center gap-1 text-xs ${sync === 'error' ? 'text-danger' : 'text-faint'}`} aria-live="polite">
           {sync === 'error' && <CloudAlert className="size-3.5" />}
           {sync === 'saved' ? 'Kaydedildi' : sync === 'saving' ? 'Kaydediliyor…' : 'Kaydedilemedi, yeniden deneniyor'}

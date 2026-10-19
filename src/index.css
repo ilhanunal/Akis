@@ -13,6 +13,8 @@
   --accent: #1f6f66;
   --accent-ink: #ffffff;
   --accent-soft: #ddede9;
+  --garden: #e4eddc;
+  --garden-cell: #d6e4cb;
   --doing: #b7791f;
   --doing-soft: #f8eedb;
   --todo: #8a938e;
@@ -34,6 +36,8 @@
   --accent: #5db8aa;
   --accent-ink: #0f1a18;
   --accent-soft: #1c3330;
+  --garden: #18241b;
+  --garden-cell: #213125;
   --doing: #e2aa4e;
   --doing-soft: #382d1a;
   --todo: #77817b;
@@ -55,6 +59,8 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-garden: var(--garden);
+  --color-garden-cell: var(--garden-cell);
   --color-doing: var(--doing);
   --color-doing-soft: var(--doing-soft);
   --color-todo: var(--todo);

@@ -8,6 +8,8 @@ interface CloudState {
   /** undefined while the session is being restored, null when signed out. */
   person: PersonId | null | undefined
   workspace: WorkspaceId | null
+  /** The workspace whose data the stores currently hold; null while one is loading. */
+  loaded: WorkspaceId | null
   loading: boolean
   error: string
   sync: SyncState
@@ -21,6 +23,7 @@ interface CloudState {
 export const useCloud = create<CloudState>()((set) => ({
   person: undefined,
   workspace: null,
+  loaded: null,
   loading: false,
   error: '',
   sync: 'saved',

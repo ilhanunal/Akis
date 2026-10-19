@@ -16,14 +16,17 @@ import { cloudEnabled } from './lib/cloud/config'
 import { useCloud } from './store/cloud'
 import { LoginScreen } from './components/cloud/LoginScreen'
 import { ImportPrompt, WorkspaceStatus } from './components/cloud/Workspace'
+import { useCoinToasts } from './lib/garden/useCoinToasts'
 
 // The editor and charts are the heaviest dependencies; load them only when those screens open.
 const PageView = lazy(() => import('./views/PageView').then((m) => ({ default: m.PageView })))
 const DashboardView = lazy(() => import('./views/DashboardView').then((m) => ({ default: m.DashboardView })))
+const GardenView = lazy(() => import('./views/GardenView').then((m) => ({ default: m.GardenView })))
 
 function Layout() {
   useApplyTheme()
   useApplySpellcheck()
+  useCoinToasts()
   const setDrawer = useUI((s) => s.setDrawer)
   return (
     <div className="flex min-h-screen">
@@ -75,6 +78,7 @@ export default function App() {
           <Route path="aliskanliklar" element={<HabitsView />} />
           <Route path="ilerleme" element={<DashboardView />} />
           <Route path="ayarlar" element={<SettingsView />} />
+          {cloudEnabled && <Route path="bahce" element={<GardenView />} />}
           <Route path="sayfa/:id" element={<PageView />} />
           <Route path="*" element={<TodayView />} />
         </Route>

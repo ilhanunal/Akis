@@ -165,7 +165,7 @@ export async function openWorkspace(ws: WorkspaceId) {
   if (!supabase) return
   const cloud = useCloud.getState()
   workspace = ws
-  cloud.setLoading(true)
+  useCloud.setState({ loading: true, loaded: null })
   if (channel) void supabase.removeChannel(channel)
   applyRemote(() => SOURCES.forEach((s) => setList(s, [])))
 
@@ -186,7 +186,10 @@ export async function openWorkspace(ws: WorkspaceId) {
 
   try {
     await fetchWorkspace(ws)
-    if (workspace === ws) cloud.setError('')
+    if (workspace === ws) {
+      cloud.setError('')
+      useCloud.setState({ loaded: ws })
+    }
   } catch (err) {
     console.error('Akış: yüklenemedi', err)
     cloud.setError('Veriler yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.')
@@ -197,6 +200,7 @@ export async function openWorkspace(ws: WorkspaceId) {
 
 export function closeWorkspace() {
   workspace = null
+  useCloud.setState({ loaded: null })
   if (channel && supabase) void supabase.removeChannel(channel)
   channel = null
   applyRemote(() => SOURCES.forEach((s) => setList(s, [])))

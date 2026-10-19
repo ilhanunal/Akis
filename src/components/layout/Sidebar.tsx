@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { CalendarDays, Search, Settings, SquareKanban, Sprout, Sun, TrendingUp, X } from 'lucide-react'
+import { CalendarDays, Flower2, Search, Settings, SquareKanban, Sprout, Sun, TrendingUp, X } from 'lucide-react'
 import { useUI } from '../../store/ui'
 import { PageTree } from './PageTree'
 import { cloudEnabled } from '../../lib/cloud/config'
@@ -11,6 +11,8 @@ export const NAV = [
   { to: '/takvim', label: 'Takvim', icon: CalendarDays },
   { to: '/aliskanliklar', label: 'Alışkanlıklar', icon: Sprout },
   { to: '/ilerleme', label: 'İlerleme', icon: TrendingUp },
+  // The garden runs on coins from both people's history, so it exists only with the database.
+  ...(cloudEnabled ? [{ to: '/bahce', label: 'Bahçe', icon: Flower2 }] : []),
 ]
 
 const navClass = ({ isActive }: { isActive: boolean }) =>

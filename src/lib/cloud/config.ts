@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 /** The two people who can sign in. Each has a workspace of their own; "ortak" is shared. */
 export const PEOPLE = [
-  // `at` and `of` carry the Turkish suffixes: "Sıra Sedef'te", "Sedef'in bugünü".
-  { id: 'ilhan', name: 'İlhan', at: "İlhan'da", of: "İlhan'ın", email: 'ilhan@akis.com', color: '#1F6F66' },
-  { id: 'sedef', name: 'Sedef', at: "Sedef'te", of: "Sedef'in", email: 'sedef@akis.com', color: '#A04E7B' },
+  // `at`, `of` and `from` carry the Turkish suffixes: "Sıra Sedef'te", "Sedef'in bugünü", "Sedef'ten".
+  { id: 'ilhan', name: 'İlhan', at: "İlhan'da", of: "İlhan'ın", from: "İlhan'dan", email: 'ilhan@akis.com', color: '#1F6F66' },
+  { id: 'sedef', name: 'Sedef', at: "Sedef'te", of: "Sedef'in", from: "Sedef'ten", email: 'sedef@akis.com', color: '#A04E7B' },
 ] as const
 
 export type PersonId = (typeof PEOPLE)[number]['id']

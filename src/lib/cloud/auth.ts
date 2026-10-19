@@ -2,6 +2,7 @@ import { useCloud } from '../../store/cloud'
 import { useUI } from '../../store/ui'
 import { PEOPLE, personByEmail, supabase, type PersonId, type WorkspaceId } from './config'
 import { closeWorkspace, openWorkspace } from './sync'
+import { startGarden, stopGarden } from './garden'
 
 const LAST_WORKSPACE = 'akis-workspace'
 
@@ -42,6 +43,7 @@ function onSignedIn(email?: string) {
   const ws = rememberedWorkspace(person.id)
   cloud.setWorkspace(ws)
   void openWorkspace(ws)
+  void startGarden()
 }
 
 /** Restores a saved session and follows sign-ins and sign-outs. Call once at startup. */
@@ -55,6 +57,7 @@ export function initAuth() {
     if (event === 'SIGNED_IN' && session) onSignedIn(session.user.email)
     if (event === 'SIGNED_OUT') {
       closeWorkspace()
+      stopGarden()
       useCloud.setState({ person: null, workspace: null })
     }
   })

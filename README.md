@@ -38,6 +38,21 @@ değişiklikler diğer kişinin ekranına anında düşer. Tanımlı değilse he
 3. Netlify → Environment variables: `VITE_SUPABASE_URL` (Project URL) ve `VITE_SUPABASE_KEY` (publishable key), sonra yeniden yayınla.
    Yerelde aynı değerleri `.env.local` dosyasına yaz.
 
+## Bahçe (veritabanı modunda)
+
+Görev bitirdikçe coin kazanılır, coin'lerle kişisel bahçe büyütülür. Diğerinin bahçesi görüntülenir, ona hediye gönderilebilir.
+Coin'ler saklanmaz; ilerleme geçmişinden (`src/lib/garden/coins.ts`) her seferinde hesaplanır, bu yüzden geri alınan görevin coin'i de geri gider.
+
+| Kazanç | Coin |
+|---|---|
+| Kendi alanında bitirilen görev | 2 |
+| Ortak görevde kendi payın | 5 |
+| İşaretlenen alışkanlık günü | 1 |
+| Bir alışkanlığı Pazartesi–Pazar 7/7 yapmak | +7 |
+| En az bir görev bitirilen gün | +2 |
+
+Bahçe nesneleri `items` tablosunda `kind = 'garden'` satırlarıdır; katalog `src/lib/garden/catalog.ts` içindedir.
+
 ## İleride mobil uygulama için
 
 Kod, bir gün mobil uygulamaya (React Native ya da Capacitor) taşınabilecek şekilde ayrıldı:
