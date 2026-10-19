@@ -33,7 +33,16 @@ export function TodayView() {
   const person = useCloud((s) => s.person)
   const workspace = useCloud((s) => s.workspace)
   const name = PEOPLE.find((p) => p.id === person)?.name ?? localName
-  const viewing = workspace && workspace !== person ? WORKSPACES.find((w) => w.id === workspace) : undefined
+  // The heading follows the open workspace: your own greets you, the shared one greets you both,
+  // and the other person's is titled as theirs.
+  const owner = workspace && workspace !== person ? PEOPLE.find((p) => p.id === workspace) : undefined
+  const shared = workspace === 'ortak'
+  const heading = owner
+    ? `${owner.of} bugünü`
+    : shared
+      ? `${greeting()}, ${PEOPLE.map((p) => p.name).join(' ve ')}`
+      : `${greeting()}${name ? `, ${name}` : ''}`
+  const area = owner || shared ? WORKSPACES.find((w) => w.id === workspace) : undefined
   const toast = useUI((s) => s.toast)
   const [draft, setDraft] = useState('')
 
@@ -62,13 +71,12 @@ export function TodayView() {
       <header className="mb-8">
         <p className="text-muted">{fmt(new Date(), 'd MMMM, EEEE')}</p>
         <h1 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-          {greeting()}
-          {name ? `, ${name}` : ''}
+          {heading}
         </h1>
-        {viewing && (
+        {area && (
           <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-            <span className="size-2 rounded-full" style={{ background: viewing.color }} aria-hidden />
-            {viewing.title} gösteriliyor
+            <span className="size-2 rounded-full" style={{ background: area.color }} aria-hidden />
+            {shared ? 'İkinizin ortak görevleri ve alışkanlıkları' : `${owner!.of} görevleri ve alışkanlıkları`}
           </p>
         )}
       </header>

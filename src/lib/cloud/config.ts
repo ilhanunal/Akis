@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 /** The two people who can sign in. Each has a workspace of their own; "ortak" is shared. */
 export const PEOPLE = [
-  // `at` is the name with the locative suffix, as in "Sıra Sedef'te".
-  { id: 'ilhan', name: 'İlhan', at: "İlhan'da", email: 'ilhan@akis.com', color: '#1F6F66' },
-  { id: 'sedef', name: 'Sedef', at: "Sedef'te", email: 'sedef@akis.com', color: '#A04E7B' },
+  // `at` and `of` carry the Turkish suffixes: "Sıra Sedef'te", "Sedef'in bugünü".
+  { id: 'ilhan', name: 'İlhan', at: "İlhan'da", of: "İlhan'ın", email: 'ilhan@akis.com', color: '#1F6F66' },
+  { id: 'sedef', name: 'Sedef', at: "Sedef'te", of: "Sedef'in", email: 'sedef@akis.com', color: '#A04E7B' },
 ] as const
 
 export type PersonId = (typeof PEOPLE)[number]['id']

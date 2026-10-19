@@ -33,7 +33,8 @@ export function SettingsView() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [error, setError] = useState('')
-  const workspace = WORKSPACES.find((w) => w.id === useCloud((s) => s.workspace))
+  const workspaceId = useCloud((s) => s.workspace)
+  const workspace = WORKSPACES.find((w) => w.id === workspaceId)
   // In cloud mode backup, restore and reset act on the open workspace only.
   const scope = cloudEnabled && workspace ? workspace.within : 'Bu tarayıcıdaki'
 

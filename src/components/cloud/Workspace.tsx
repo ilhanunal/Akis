@@ -44,7 +44,8 @@ export function WorkspaceSwitcher({ onSwitch }: { onSwitch?: () => void }) {
 
 /** Who is signed in, whether edits reached the database, and sign out. */
 export function AccountFooter() {
-  const person = PEOPLE.find((p) => p.id === useCloud((s) => s.person))
+  const personId = useCloud((s) => s.person)
+  const person = PEOPLE.find((p) => p.id === personId)
   const sync = useCloud((s) => s.sync)
   if (!person) return null
   return (
