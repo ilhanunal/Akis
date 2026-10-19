@@ -5,6 +5,7 @@ import type { Status, Task } from '../types'
 import { uid } from '../lib/id'
 import { dayKey, todayKey } from '../lib/dates'
 import { useActivity } from './activity'
+import { PEOPLE } from '../lib/cloud/config'
 
 interface TasksState {
   tasks: Task[]
@@ -14,6 +15,8 @@ interface TasksState {
   setStatus: (id: string, status: Status) => void
   /** Writes the order and status of every id in each given column, as produced by a drag. */
   commitColumns: (columns: Partial<Record<Status, string[]>>) => void
+  /** Shared workspace: records or withdraws one person's part. The task is done once everyone has marked it. */
+  setMark: (id: string, person: string, on: boolean) => void
 }
 
 /** Applies the side effects of entering or leaving "done": completion time and progress history. */
@@ -87,6 +90,23 @@ export const useTasks = create<TasksState>()(
             }),
           }
         }),
+      setMark: (id, person, on) =>
+        set((s) => ({
+          tasks: s.tasks.map((t) => {
+            if (t.id !== id || !!t.marks?.[person] === on) return t
+            const marks = { ...t.marks }
+            const activity = useActivity.getState()
+            if (on) {
+              marks[person] = new Date().toISOString()
+              activity.add('task_mark', id, todayKey(), person)
+            } else {
+              activity.remove('task_mark', id, dayKey(new Date(marks[person])), person)
+              delete marks[person]
+            }
+            const everyone = PEOPLE.every((p) => marks[p.id])
+            return withStatus({ ...t, marks }, everyone ? 'done' : 'todo')
+          }),
+        })),
     }),
     { name: 'akis-tasks', storage: dataStorage },
   ),

@@ -8,6 +8,8 @@ import { fmt } from '../../lib/dates'
 import { uid } from '../../lib/id'
 import { Modal } from '../common/Modal'
 import { STATUS_DOT } from './Column'
+import { useSharedMe } from '../../lib/cloud/shared'
+import { MarksField } from '../cloud/SharedMarks'
 
 export function TaskModalHost() {
   const id = useUI((s) => s.openTaskId)
@@ -67,6 +69,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
   const deleteTask = useTasks((s) => s.deleteTask)
   const pages = usePages((s) => s.pages)
   const toast = useUI((s) => s.toast)
+  const me = useSharedMe()
   const [tagDraft, setTagDraft] = useState('')
   const [subDraft, setSubDraft] = useState('')
 
@@ -115,23 +118,29 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
           className="field-sizing-content mb-3 w-full resize-none overflow-hidden bg-transparent font-display text-2xl font-semibold leading-tight outline-none placeholder:text-faint"
         />
 
-        <Field icon={<CircleDot />} label="Durum">
-          <Segmented
-            label="Durum"
-            value={task.status}
-            options={STATUSES}
-            onChange={(s) => {
-              setStatus(task.id, s)
-              if (s === 'done' && task.status !== 'done') toast('Tamamlandı. Akış ilerliyor.')
-            }}
-            render={(s) => (
-              <>
-                <span className={`size-2 rounded-full ${STATUS_DOT[s]}`} />
-                {STATUS_LABEL[s]}
-              </>
-            )}
-          />
-        </Field>
+        {me ? (
+          <Field icon={<CircleDot />} label="Kim yaptı">
+            <MarksField task={task} me={me} />
+          </Field>
+        ) : (
+          <Field icon={<CircleDot />} label="Durum">
+            <Segmented
+              label="Durum"
+              value={task.status}
+              options={STATUSES}
+              onChange={(s) => {
+                setStatus(task.id, s)
+                if (s === 'done' && task.status !== 'done') toast('Tamamlandı. Akış ilerliyor.')
+              }}
+              render={(s) => (
+                <>
+                  <span className={`size-2 rounded-full ${STATUS_DOT[s]}`} />
+                  {STATUS_LABEL[s]}
+                </>
+              )}
+            />
+          </Field>
+        )}
 
         <Field icon={<Flag />} label="Öncelik">
           <Segmented

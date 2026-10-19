@@ -7,7 +7,7 @@ const SEG: Record<Status, string> = {
 }
 
 /** The board's progress band: one segment per column, flowing toward "done" as cards move. */
-export function FlowBar({ counts }: { counts: Record<Status, number> }) {
+export function FlowBar({ counts, labels = STATUS_LABEL }: { counts: Record<Status, number>; labels?: Record<Status, string> }) {
   const total = counts.todo + counts.doing + counts.done
   const pct = total ? Math.round((counts.done / total) * 100) : 0
   return (
@@ -27,7 +27,7 @@ export function FlowBar({ counts }: { counts: Record<Status, number> }) {
       <div
         className="flex h-3 gap-[3px] overflow-hidden rounded-full bg-sunken"
         role="img"
-        aria-label={STATUSES.map((s) => `${STATUS_LABEL[s]}: ${counts[s]}`).join(', ')}
+        aria-label={STATUSES.map((s) => `${labels[s]}: ${counts[s]}`).join(', ')}
       >
         {total > 0 &&
           STATUSES.map((s) => (

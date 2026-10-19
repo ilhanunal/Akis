@@ -23,6 +23,8 @@ import { useUI } from '../../store/ui'
 import { Column } from './Column'
 import { FlowBar } from './FlowBar'
 import { TaskCardBody } from './TaskCard'
+import { SharedBoard } from './SharedBoard'
+import { useSharedMe } from '../../lib/cloud/shared'
 
 type Columns = Record<Status, string[]>
 
@@ -39,7 +41,13 @@ const toColumns = (tasks: Task[]): Columns => {
   return cols
 }
 
-export function Board({ filter, defaults, showFlow = true }: Props) {
+/** The shared workspace gets its own board (one column per person); everywhere else the status board. */
+export function Board(props: Props) {
+  const me = useSharedMe()
+  return me ? <SharedBoard {...props} me={me} /> : <StatusBoard {...props} />
+}
+
+function StatusBoard({ filter, defaults, showFlow = true }: Props) {
   const allTasks = useTasks((s) => s.tasks)
   const addTask = useTasks((s) => s.addTask)
   const commitColumns = useTasks((s) => s.commitColumns)

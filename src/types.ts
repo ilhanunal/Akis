@@ -20,6 +20,8 @@ export interface Task {
   subtasks: Subtask[]
   createdAt: string
   completedAt?: string
+  /** Shared workspace only: who has done this task, person id → when. Done for good once both have. */
+  marks?: Record<string, string>
 }
 
 export interface Page {
@@ -46,9 +48,12 @@ export interface Habit {
 
 export interface ActivityEvent {
   id: string
-  type: 'task_done' | 'habit_done'
+  /** task_mark: one person did their part of a shared task. */
+  type: 'task_done' | 'habit_done' | 'task_mark'
   date: string // YYYY-MM-DD
   refId: string
+  /** Person id, for task_mark. */
+  by?: string
 }
 
 export const STATUSES: Status[] = ['todo', 'doing', 'done']

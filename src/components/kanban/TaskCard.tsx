@@ -11,9 +11,10 @@ interface BodyProps {
   dragging?: boolean
   overlay?: boolean
   justDone?: boolean
+  footer?: React.ReactNode
 }
 
-export function TaskCardBody({ task, dragging, overlay, justDone }: BodyProps) {
+export function TaskCardBody({ task, dragging, overlay, justDone, footer }: BodyProps) {
   const page = usePages((s) => (task.pageId ? s.pages.find((p) => p.id === task.pageId) : undefined))
   const done = task.status === 'done'
   const subDone = task.subtasks.filter((s) => s.done).length
@@ -58,6 +59,7 @@ export function TaskCardBody({ task, dragging, overlay, justDone }: BodyProps) {
           ))}
         </div>
       )}
+      {footer}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { PRIORITIES, PRIORITY_LABEL, type Priority, type Task } from '../types'
 import { useTasks } from '../store/tasks'
 import { Board } from '../components/kanban/Board'
 import { PageHeader } from '../components/common/PageHeader'
+import { useSharedMe } from '../lib/cloud/shared'
 
 const selectClass = 'rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink'
 
@@ -12,6 +13,7 @@ export function BoardView() {
   const [q, setQ] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
   const [tag, setTag] = useState('')
+  const shared = useSharedMe()
 
   const tags = useMemo(() => [...new Set(tasks.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b, 'tr')), [tasks])
   const active = q || priority || tag
@@ -31,7 +33,11 @@ export function BoardView() {
     <div>
       <PageHeader
         title="Pano"
-        subtitle="Kartları sürükleyerek ilerlet. Ayrıntılar için karta tıkla."
+        subtitle={
+          shared
+            ? 'Yaptığın görevi kendi sütununa sürükle. İkiniz de yapınca panodan kalkar.'
+            : 'Kartları sürükleyerek ilerlet. Ayrıntılar için karta tıkla.'
+        }
         actions={
           <>
             <label className="relative">

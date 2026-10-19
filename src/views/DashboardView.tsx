@@ -7,6 +7,8 @@ import { useHabits } from '../store/habits'
 import { dayKey, fmt, lastNDays, weekDays } from '../lib/dates'
 import { countByDay, dailySeries, habitAdherence, taskStreak } from '../lib/stats'
 import { PageHeader } from '../components/common/PageHeader'
+import { useSharedMe } from '../lib/cloud/shared'
+import { MarksScoreboard } from '../components/cloud/SharedMarks'
 
 function Stat({ value, label, note }: { value: ReactNode; label: string; note?: string }) {
   return (
@@ -62,6 +64,7 @@ export function DashboardView() {
   const events = useActivity((s) => s.events)
   const habits = useHabits((s) => s.habits)
   const [range, setRange] = useState<7 | 30>(7)
+  const shared = useSharedMe()
 
   const series = useMemo(() => dailySeries(events, 'task_done', range), [events, range])
   const doneByDay = useMemo(() => countByDay(events, 'task_done'), [events])
@@ -102,6 +105,8 @@ export function DashboardView() {
           note="Son 7 gün"
         />
       </div>
+
+      {shared && <MarksScoreboard events={events} />}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
