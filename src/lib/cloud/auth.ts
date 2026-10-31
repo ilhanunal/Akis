@@ -4,11 +4,12 @@ import { PEOPLE, personByEmail, supabase, type PersonId, type WorkspaceId } from
 import { closeWorkspace, openWorkspace } from './sync'
 import { startGarden, stopGarden } from './garden'
 
+// Kept for the session only: a refresh stays in the same workspace, reopening the app starts in your own.
 const LAST_WORKSPACE = 'akis-workspace'
 
 function rememberedWorkspace(person: PersonId): WorkspaceId {
   try {
-    const saved = localStorage.getItem(LAST_WORKSPACE)
+    const saved = sessionStorage.getItem(LAST_WORKSPACE)
     if (saved === 'ilhan' || saved === 'sedef' || saved === 'ortak') return saved
   } catch {
     /* storage unavailable */
@@ -20,7 +21,7 @@ export function switchWorkspace(ws: WorkspaceId) {
   const cloud = useCloud.getState()
   if (cloud.workspace === ws) return
   try {
-    localStorage.setItem(LAST_WORKSPACE, ws)
+    sessionStorage.setItem(LAST_WORKSPACE, ws)
   } catch {
     /* storage unavailable */
   }
@@ -76,7 +77,7 @@ export async function signIn(person: PersonId, password: string) {
 
 export async function signOut() {
   try {
-    localStorage.removeItem(LAST_WORKSPACE)
+    sessionStorage.removeItem(LAST_WORKSPACE)
   } catch {
     /* storage unavailable */
   }

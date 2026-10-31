@@ -1,6 +1,7 @@
 // Platform-independent backup logic: plain objects in, plain objects out.
 // Web-only file handling lives in backupWeb.ts so a mobile build can reuse this file as is.
 import { useActivity } from '../store/activity'
+import { useNotes } from '../store/notes'
 import { useHabits } from '../store/habits'
 import { usePages } from '../store/pages'
 import { useSettings, type Theme } from '../store/settings'
@@ -17,6 +18,7 @@ export function serializeData() {
     pages: usePages.getState().pages,
     habits: useHabits.getState().habits,
     events: useActivity.getState().events,
+    notes: useNotes.getState().notes,
     settings: { name: useSettings.getState().name, theme: useSettings.getState().theme, spellcheck: useSettings.getState().spellcheck },
   }
 }
@@ -31,6 +33,7 @@ export function restoreData(data: unknown) {
   usePages.setState({ pages: d.pages })
   useHabits.setState({ habits: Array.isArray(d.habits) ? d.habits : [] })
   useActivity.setState({ events: Array.isArray(d.events) ? d.events : [] })
+  useNotes.setState({ notes: Array.isArray(d.notes) ? d.notes : [] })
   const settings = d.settings as { name?: string; theme?: Theme; spellcheck?: boolean } | undefined
   if (settings)
     useSettings.setState({ name: settings.name ?? '', theme: settings.theme ?? 'system', spellcheck: settings.spellcheck ?? false })
@@ -42,6 +45,7 @@ export function resetData() {
   usePages.setState({ pages: [] })
   useHabits.setState({ habits: [] })
   useActivity.setState({ events: [] })
+  useNotes.setState({ notes: [] })
   // Stay seeded so a reset gives an empty workspace rather than the sample data again.
   useSettings.setState({ seeded: true })
 }

@@ -18,8 +18,10 @@ if (cloudEnabled) {
 
 if (import.meta.env.DEV) {
   // Dev-only handle for poking at state from the console; stripped from production builds.
-  void Promise.all([import('./store/cloud'), import('./store/tasks'), import('./store/activity'), import('./store/garden')]).then(([c, t, a, g]) => {
-    Object.assign(window, { __akis: { cloud: c.useCloud, tasks: t.useTasks, activity: a.useActivity, garden: g.useGarden } })
+  void Promise.all([import('./store/cloud'), import('./store/tasks'), import('./store/activity'), import('./store/garden'), import('./store/habits'), import('./store/notes')]).then(([c, t, a, g, h, n]) => {
+    Object.assign(window, {
+      __akis: { cloud: c.useCloud, tasks: t.useTasks, activity: a.useActivity, garden: g.useGarden, habits: h.useHabits, notes: n.useNotes },
+    })
   })
 }
 

@@ -28,8 +28,8 @@ export function WorkspaceSwitcher({ onSwitch }: { onSwitch?: () => void }) {
           onClick={() => {
             if (current === w.id) return
             switchWorkspace(w.id)
-            // A page from one workspace doesn't exist in another.
-            if (location.pathname.startsWith('/sayfa/')) navigate('/')
+            // Every workspace opens on its Today screen.
+            navigate('/')
             onSwitch?.()
           }}
           className={`flex items-center justify-center gap-1.5 rounded-md px-1 py-1.5 text-sm ${

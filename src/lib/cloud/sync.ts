@@ -8,10 +8,11 @@ import { useCloud } from '../../store/cloud'
 import { useHabits } from '../../store/habits'
 import { usePages } from '../../store/pages'
 import { useTasks } from '../../store/tasks'
+import { useNotes } from '../../store/notes'
 import { uid } from '../id'
 import { supabase, type WorkspaceId } from './config'
 
-type Kind = 'task' | 'page' | 'habit' | 'event'
+type Kind = 'task' | 'page' | 'habit' | 'event' | 'note'
 type Item = { id: string; createdAt?: string; date?: string }
 interface Row {
   id: string
@@ -32,6 +33,7 @@ const SOURCES: Source[] = [
   { kind: 'page', store: usePages as never, key: 'pages' },
   { kind: 'habit', store: useHabits as never, key: 'habits' },
   { kind: 'event', store: useActivity as never, key: 'events' },
+  { kind: 'note', store: useNotes as never, key: 'notes' },
 ]
 
 const list = (s: Source) => (s.store.getState() as Record<string, Item[]>)[s.key]

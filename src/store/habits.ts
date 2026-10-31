@@ -5,13 +5,14 @@ import type { Habit } from '../types'
 import { uid } from '../lib/id'
 import { todayKey } from '../lib/dates'
 import { useActivity } from './activity'
+import { canTickToday } from '../lib/habits'
 
 interface HabitsState {
   habits: Habit[]
-  addHabit: (input: Pick<Habit, 'name' | 'icon' | 'color' | 'targetPerWeek'>) => void
+  addHabit: (input: Pick<Habit, 'name' | 'icon' | 'color' | 'targetPerWeek' | 'days'>) => void
   updateHabit: (id: string, patch: Partial<Habit>) => void
   deleteHabit: (id: string) => void
-  /** Checks or unchecks today. Past and future days are read-only by design. */
+  /** Checks or unchecks today. Past and future days are read-only by design, and so is a day the schedule doesn't ask for. */
   toggleToday: (id: string) => void
 }
 
@@ -28,7 +29,7 @@ export const useHabits = create<HabitsState>()(
       toggleToday: (id) => {
         const day = todayKey()
         const habit = get().habits.find((h) => h.id === id)
-        if (!habit) return
+        if (!habit || !canTickToday(habit).ok) return
         const done = !habit.log[day]
         const activity = useActivity.getState()
         const log = { ...habit.log }

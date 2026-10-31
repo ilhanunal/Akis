@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import { Menu as MenuIcon } from 'lucide-react'
 import { Sidebar } from './components/layout/Sidebar'
 import { CommandPalette } from './components/common/CommandPalette'
@@ -67,9 +67,27 @@ function CloudGate() {
   return <Layout />
 }
 
+const SESSION = 'akis-session'
+
+/** Opening the app starts on Today; a refresh within the same session keeps the current screen. */
+function StartOnToday() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SESSION)) return
+      sessionStorage.setItem(SESSION, '1')
+    } catch {
+      return
+    }
+    navigate('/', { replace: true })
+  }, [navigate])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <StartOnToday />
       <Routes>
         <Route element={cloudEnabled ? <CloudGate /> : <Layout />}>
           <Route index element={<TodayView />} />

@@ -41,8 +41,20 @@ export interface Habit {
   name: string
   icon: string
   color: string
+  /** Days a week to do it, on any days. Ignored when `days` is set. */
   targetPerWeek: number
+  /** Fixed weekdays (Monday 1 … Sunday 7); only these days can be ticked. */
+  days?: number[]
   log: Record<string, boolean>
+  createdAt: string
+}
+
+/** A note left on the shared Today screen. */
+export interface Note {
+  id: string
+  text: string
+  /** Person id of the author. */
+  by: string
   createdAt: string
 }
 

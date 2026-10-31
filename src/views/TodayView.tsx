@@ -8,7 +8,8 @@ import { useCloud } from '../store/cloud'
 import { PEOPLE, WORKSPACES } from '../lib/cloud/config'
 import { useUI } from '../store/ui'
 import { dayKey, fmt, greeting, isOverdue, todayKey } from '../lib/dates'
-import { habitStreak } from '../lib/stats'
+import { canTickToday, streakLabel } from '../lib/habits'
+import { DayNotes } from '../components/cloud/DayNotes'
 import { ProgressRing } from '../components/common/ProgressRing'
 import { TaskRow } from '../components/common/TaskRow'
 
@@ -55,8 +56,11 @@ export function TodayView() {
   const inProgress = tasks.filter((t) => t.status === 'doing' && t.dueDate !== today && !isOverdue(t.dueDate))
 
   const doneCount = dueToday.filter((t) => t.status === 'done').length
-  const habitsDone = habits.filter((h) => h.log[today]).length
-  const total = dueToday.length + habits.length
+  // Habits the schedule doesn't ask for today (wrong weekday, or the week's target already met) sit out.
+  const todaysHabits = habits.filter((h) => canTickToday(h).ok)
+  const restingHabits = habits.filter((h) => !canTickToday(h).ok)
+  const habitsDone = todaysHabits.filter((h) => h.log[today]).length
+  const total = dueToday.length + todaysHabits.length
   const progress = total ? (doneCount + habitsDone) / total : 0
 
   const add = () => {
@@ -99,6 +103,8 @@ export function TodayView() {
               </button>
             )}
           </div>
+
+          {shared && person && <DayNotes me={person} />}
 
           {overdue.length > 0 && (
             <Section title="Gecikenler" count={overdue.length}>
@@ -161,9 +167,8 @@ export function TodayView() {
               </Link>
             ) : (
               <ul className="space-y-1">
-                {habits.map((h) => {
+                {todaysHabits.map((h) => {
                   const done = !!h.log[today]
-                  const s = habitStreak(h)
                   return (
                     <li key={h.id}>
                       <button
@@ -180,12 +185,25 @@ export function TodayView() {
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm">{h.name}</span>
-                          <span className="text-xs text-muted">{s > 0 ? `${s} günlük seri` : 'Seri yok'}</span>
+                          <span className="text-xs text-muted">{streakLabel(h)}</span>
                         </span>
                       </button>
                     </li>
                   )
                 })}
+                {restingHabits.map((h) => (
+                  <li key={h.id} className="flex items-center gap-3 px-2 py-2 opacity-60" title={canTickToday(h).reason}>
+                    <span className="grid size-7 shrink-0 place-items-center rounded-lg border-[1.5px] border-dashed border-line text-sm">
+                      {h.icon}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm">{h.name}</span>
+                      <span className="text-xs text-muted">
+                        {canTickToday(h).reason} · {streakLabel(h)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
               </ul>
             )}
           </section>

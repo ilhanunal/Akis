@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { PEOPLE, type PersonId } from '../../lib/cloud/config'
 import { signIn } from '../../lib/cloud/auth'
@@ -22,6 +23,11 @@ export function LoginScreen() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const person = PEOPLE.find((p) => p.id === chosen)
+  const navigate = useNavigate()
+  // Whoever signs in lands on Today.
+  useEffect(() => {
+    void navigate('/', { replace: true })
+  }, [navigate])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
