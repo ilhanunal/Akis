@@ -19,11 +19,19 @@ export interface GardenItem {
   createdAt: string
 }
 
+/** Steps walked on one day, kept in the walker's workspace. */
+export interface StepsEntry {
+  id: string
+  date: string // YYYY-MM-DD
+  count: number
+  updatedAt: string
+}
+
 export interface CoinRow {
   id: string
   workspace: string
-  kind: 'event' | 'garden'
-  data: ActivityEvent | GardenItem
+  kind: 'event' | 'garden' | 'steps'
+  data: ActivityEvent | GardenItem | StepsEntry
 }
 
 // Every workspace's history and gardens, kept apart from the open workspace's stores:
@@ -94,6 +102,20 @@ export function useBalance(person: string | null | undefined) {
     () => (earned && person ? earned.total - spent(gardenRows(rows).map((r) => r.data), person) : null),
     [earned, rows, person],
   )
+}
+
+/** Day → steps for one person. */
+export function useStepsOf(owner: string) {
+  const rows = useGarden((s) => s.rows)
+  return useMemo(() => {
+    const byDay = new Map<string, number>()
+    for (const r of Object.values(rows))
+      if (r.kind === 'steps' && r.workspace === owner) {
+        const e = r.data as StepsEntry
+        byDay.set(e.date, e.count)
+      }
+    return byDay
+  }, [rows, owner])
 }
 
 /** One person's garden: the plot (land row) and everything in it or waiting in the inventory. */

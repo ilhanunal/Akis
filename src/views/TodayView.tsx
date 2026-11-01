@@ -10,6 +10,7 @@ import { useUI } from '../store/ui'
 import { dayKey, fmt, greeting, isOverdue, todayKey } from '../lib/dates'
 import { canTickToday, streakLabel } from '../lib/habits'
 import { DayNotes } from '../components/cloud/DayNotes'
+import { StepsCard, StepsCompare } from '../components/cloud/Steps'
 import { ProgressRing } from '../components/common/ProgressRing'
 import { TaskRow } from '../components/common/TaskRow'
 
@@ -153,6 +154,8 @@ export function TodayView() {
               </p>
             </div>
           </div>
+
+          {person && workspace && (shared ? <StepsCompare /> : <StepsCard owner={workspace} me={person} />)}
 
           <section>
             <div className="mb-2 flex items-baseline justify-between">

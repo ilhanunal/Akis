@@ -1,4 +1,5 @@
-// Loads every workspace's history and gardens, follows changes live, and writes garden purchases.
+// Loads data that is read across workspaces (history, gardens, daily steps), follows changes live,
+// and writes garden purchases and step counts.
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { balanceNow, useGarden, type CoinRow, type GardenItem } from '../../store/garden'
 import { useUI } from '../../store/ui'
@@ -17,7 +18,7 @@ async function fetchAll() {
     const { data, error } = await supabase
       .from('items')
       .select('id, workspace, kind, data')
-      .in('kind', ['event', 'garden'])
+      .in('kind', ['event', 'garden', 'steps'])
       .order('id')
       .range(from, from + PAGE - 1)
     if (error) throw error
@@ -36,8 +37,8 @@ export async function startGarden() {
   const { put, drop } = useGarden.getState()
   channel = supabase
     .channel('garden')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'items', filter: 'kind=in.(event,garden)' }, (p) => put(p.new as CoinRow))
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'items', filter: 'kind=in.(event,garden)' }, (p) => put(p.new as CoinRow))
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'items', filter: 'kind=in.(event,garden,steps)' }, (p) => put(p.new as CoinRow))
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'items', filter: 'kind=in.(event,garden,steps)' }, (p) => put(p.new as CoinRow))
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'items' }, (p) => {
       const id = (p.old as { id?: string }).id
       if (id) drop(id)
@@ -59,19 +60,33 @@ export function stopGarden() {
 }
 
 /** Shows the change at once, then saves it; puts things back if the save fails. */
-async function save(owner: string, next: GardenItem) {
+export async function saveRow(owner: string, kind: CoinRow['kind'], next: CoinRow['data']) {
   if (!supabase) return false
   const { rows, put, drop } = useGarden.getState()
   const before = rows[next.id]
-  put({ id: next.id, workspace: owner, kind: 'garden', data: next })
-  const { error } = await supabase.from('items').upsert({ id: next.id, workspace: owner, kind: 'garden', data: next })
+  put({ id: next.id, workspace: owner, kind, data: next })
+  const { error } = await supabase.from('items').upsert({ id: next.id, workspace: owner, kind, data: next })
   if (!error) return true
-  console.error('Akış: bahçe kaydedilemedi', error)
+  console.error('Akış: kaydedilemedi', error)
   if (before) put(before)
   else drop(next.id)
   useUI.getState().toast('Kaydedilemedi. İnternet bağlantını kontrol et.')
   return false
 }
+
+export async function removeRow(id: string) {
+  if (!supabase) return
+  const { rows, put, drop } = useGarden.getState()
+  const before = rows[id]
+  drop(id)
+  const { error } = await supabase.from('items').delete().eq('id', id)
+  if (!error) return
+  console.error('Akış: silinemedi', error)
+  if (before) put(before)
+  useUI.getState().toast('Silinemedi. İnternet bağlantını kontrol et.')
+}
+
+const save = (owner: string, next: GardenItem) => saveRow(owner, 'garden', next)
 
 function canAfford(me: string, cost: number) {
   const balance = balanceNow(me)
