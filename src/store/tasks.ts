@@ -6,6 +6,7 @@ import { uid } from '../lib/id'
 import { dayKey, todayKey } from '../lib/dates'
 import { useActivity } from './activity'
 import { PEOPLE } from '../lib/cloud/config'
+import { notify } from '../lib/cloud/push'
 
 interface TasksState {
   tasks: Task[]
@@ -104,6 +105,8 @@ export const useTasks = create<TasksState>()(
               delete marks[person]
             }
             const everyone = PEOPLE.every((p) => marks[p.id])
+            // Tell the other person their turn has come, or that the task is finished for both.
+            if (on) void notify({ type: 'mark', title: t.title, finished: everyone })
             return withStatus({ ...t, marks }, everyone ? 'done' : 'todo')
           }),
         })),

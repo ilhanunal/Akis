@@ -1,13 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
+import { PEOPLE, cleanSupabaseUrl, type PersonId } from './people'
 
-/** The two people who can sign in. Each has a workspace of their own; "ortak" is shared. */
-export const PEOPLE = [
-  // `at`, `of` and `from` carry the Turkish suffixes: "Sıra Sedef'te", "Sedef'in bugünü", "Sedef'ten".
-  { id: 'ilhan', name: 'İlhan', at: "İlhan'da", of: "İlhan'ın", from: "İlhan'dan", email: 'ilhan@akis.com', color: '#1F6F66' },
-  { id: 'sedef', name: 'Sedef', at: "Sedef'te", of: "Sedef'in", from: "Sedef'ten", email: 'sedef@akis.com', color: '#A04E7B' },
-] as const
+export { PEOPLE, personByEmail, type PersonId } from './people'
 
-export type PersonId = (typeof PEOPLE)[number]['id']
 export type WorkspaceId = PersonId | 'ortak'
 
 export const WORKSPACES: { id: WorkspaceId; name: string; title: string; within: string; color: string }[] = [
@@ -16,10 +11,8 @@ export const WORKSPACES: { id: WorkspaceId; name: string; title: string; within:
   { id: 'ortak', name: 'Ortak', title: 'Ortak alan', within: 'Ortak alandaki', color: '#B7791F' },
 ]
 
-export const personByEmail = (email?: string) => PEOPLE.find((p) => p.email === email?.toLowerCase())
-
 // Supabase's Data API page shows the URL with "/rest/v1/" appended; the client needs the bare project URL.
-const url = import.meta.env.VITE_SUPABASE_URL?.trim().replace(/\/(rest\/v1\/?)?$/, '').replace(/\/$/, '')
+const url = cleanSupabaseUrl(import.meta.env.VITE_SUPABASE_URL)
 const key = import.meta.env.VITE_SUPABASE_KEY?.trim()
 
 /**

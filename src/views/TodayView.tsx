@@ -11,6 +11,7 @@ import { dayKey, fmt, greeting, isOverdue, todayKey } from '../lib/dates'
 import { canTickToday, streakLabel } from '../lib/habits'
 import { DayNotes } from '../components/cloud/DayNotes'
 import { StepsCard, StepsCompare } from '../components/cloud/Steps'
+import { InstallHint } from '../components/cloud/AppSettings'
 import { ProgressRing } from '../components/common/ProgressRing'
 import { TaskRow } from '../components/common/TaskRow'
 
@@ -73,6 +74,7 @@ export function TodayView() {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <InstallHint />
       <header className="mb-8">
         <p className="text-muted">{fmt(new Date(), 'd MMMM, EEEE')}</p>
         <h1 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">

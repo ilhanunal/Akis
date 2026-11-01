@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Download, Monitor, Moon, Sun, Upload } from 'lucide-react'
 import { useSettings, type Theme } from '../store/settings'
 import { useUI } from '../store/ui'
@@ -6,6 +6,9 @@ import { resetData } from '../lib/backup'
 import { downloadBackup, restoreFromFile } from '../lib/backupWeb'
 import { PageHeader } from '../components/common/PageHeader'
 import { Modal } from '../components/common/Modal'
+import { SettingsRow } from '../components/common/SettingsRow'
+import { InstallRow, NotificationsRow } from '../components/cloud/AppSettings'
+import { useLocation } from 'react-router-dom'
 import { cloudEnabled, WORKSPACES } from '../lib/cloud/config'
 import { useCloud } from '../store/cloud'
 
@@ -14,18 +17,6 @@ const THEMES: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'dark', label: 'Koyu', icon: Moon },
   { value: 'system', label: 'Sistem', icon: Monitor },
 ]
-
-function Row({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line py-5 last:border-0">
-      <div className="max-w-md">
-        <h2 className="font-medium">{title}</h2>
-        <p className="text-sm text-muted">{description}</p>
-      </div>
-      {children}
-    </div>
-  )
-}
 
 export function SettingsView() {
   const { name, setName, theme, setTheme, spellcheck, setSpellcheck } = useSettings()
@@ -37,23 +28,29 @@ export function SettingsView() {
   const workspace = WORKSPACES.find((w) => w.id === workspaceId)
   // In cloud mode backup, restore and reset act on the open workspace only.
   const scope = cloudEnabled && workspace ? workspace.within : 'Bu tarayıcıdaki'
+  const { hash } = useLocation()
+
+  // Links such as /ayarlar#bildirimler land on that row.
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+  }, [hash])
 
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Ayarlar" />
 
       {!cloudEnabled && (
-        <Row title="Adın" description="Bugün ekranındaki selamlamada kullanılır.">
+        <SettingsRow title="Adın" description="Bugün ekranındaki selamlamada kullanılır.">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Adın"
             className="w-56 rounded-lg border border-line bg-surface px-3 py-2 outline-none focus:border-accent"
           />
-        </Row>
+        </SettingsRow>
       )}
 
-      <Row title="Tema" description="Sistem seçeneği cihazının ayarını izler.">
+      <SettingsRow title="Tema" description="Sistem seçeneği cihazının ayarını izler.">
         <div role="radiogroup" aria-label="Tema" className="inline-flex rounded-lg bg-sunken p-0.5">
           {THEMES.map(({ value, label, icon: Icon }) => (
             <button
@@ -69,9 +66,9 @@ export function SettingsView() {
             </button>
           ))}
         </div>
-      </Row>
+      </SettingsRow>
 
-      <Row
+      <SettingsRow
         title="Yazım denetimi"
         description="Açıkken tarayıcı, yanlış sandığı kelimelerin altını kırmızıyla çizer. Tarayıcın İngilizce sözlük kullanıyorsa doğru Türkçe kelimeler de işaretlenebilir."
       >
@@ -88,9 +85,12 @@ export function SettingsView() {
             }`}
           />
         </button>
-      </Row>
+      </SettingsRow>
 
-      <Row
+      <InstallRow />
+      {cloudEnabled && <NotificationsRow />}
+
+      <SettingsRow
         title="Yedekle"
         description={
           cloudEnabled
@@ -138,9 +138,9 @@ export function SettingsView() {
             {error}
           </p>
         )}
-      </Row>
+      </SettingsRow>
 
-      <Row
+      <SettingsRow
         title="Verileri sıfırla"
         description={
           cloudEnabled
@@ -154,7 +154,7 @@ export function SettingsView() {
         >
           Verileri sıfırla
         </button>
-      </Row>
+      </SettingsRow>
 
       {confirmReset && (
         <Modal onClose={() => setConfirmReset(false)} label="Verileri sıfırla" className="max-w-sm p-5">

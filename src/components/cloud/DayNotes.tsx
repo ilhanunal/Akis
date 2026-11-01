@@ -4,6 +4,7 @@ import type { Note } from '../../types'
 import { personOf } from '../../lib/cloud/shared'
 import { dayKey, fmt, todayKey } from '../../lib/dates'
 import { useNotes } from '../../store/notes'
+import { notify } from '../../lib/cloud/push'
 import { Avatar } from './LoginScreen'
 
 function NoteItem({ note, me }: { note: Note; me: string }) {
@@ -49,6 +50,7 @@ export function DayNotes({ me }: { me: string }) {
   const send = () => {
     if (!draft.trim()) return
     addNote(draft, me)
+    void notify({ type: 'note', text: draft.trim() })
     setDraft('')
   }
 

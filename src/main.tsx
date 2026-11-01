@@ -4,6 +4,7 @@ import App from './App'
 import { seedIfNeeded } from './lib/seed'
 import { cloudEnabled } from './lib/cloud/config'
 import { initAuth } from './lib/cloud/auth'
+import { registerServiceWorker } from './lib/pwa'
 // Fonts ship with the app instead of loading from Google, so visitors' browsers contact no third party.
 import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/instrument-sans'
@@ -24,6 +25,8 @@ if (import.meta.env.DEV) {
     })
   })
 }
+
+registerServiceWorker()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

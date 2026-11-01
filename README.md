@@ -53,6 +53,19 @@ Coin'ler saklanmaz; ilerleme geçmişinden (`src/lib/garden/coins.ts`) her sefer
 
 Bahçe nesneleri `items` tablosunda `kind = 'garden'` satırlarıdır; katalog `src/lib/garden/catalog.ts` içindedir.
 
+## Telefonda uygulama ve bildirimler
+
+Akış bir PWA: telefonda **Ana ekrana ekle** ile uygulama gibi kurulur (Ayarlar → Telefona yükle).
+iPhone'da bildirimler yalnızca ana ekrandan açıldığında çalışır (iOS 16.4+).
+
+Bildirimleri Netlify fonksiyonları gönderir:
+- `netlify/functions/notify.mts`: not bırakılınca ve ortak görevde sıra gelince diğer kişiye.
+- `netlify/functions/evening.mts`: her gün 21:00'de (Türkiye) yapılmamış alışkanlık ya da girilmemiş adım için.
+
+Netlify ortam değişkenleri (Supabase değişkenlerine ek olarak):
+- `VAPID_PRIVATE_KEY`: Web Push gizli anahtarı (açık anahtar `src/lib/cloud/people.ts` içinde).
+- `SUPABASE_SERVICE_KEY`: Supabase secret key, yalnızca akşam hatırlatması için.
+
 ## İleride mobil uygulama için
 
 Kod, bir gün mobil uygulamaya (React Native ya da Capacitor) taşınabilecek şekilde ayrıldı:
