@@ -83,7 +83,7 @@ export function SortableTaskCard({ task, justDone }: { task: Task; justDone?: bo
         if (e.key === 'Enter') openTask(task.id)
         listeners?.onKeyDown?.(e)
       }}
-      className="cursor-grab touch-manipulation rounded-lg active:cursor-grabbing"
+      className="drag-card cursor-grab touch-manipulation rounded-lg active:cursor-grabbing"
     >
       <TaskCardBody task={task} dragging={isDragging} justDone={justDone} />
     </div>

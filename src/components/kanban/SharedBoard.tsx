@@ -2,15 +2,10 @@ import { useMemo, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
   pointerWithin,
   rectIntersection,
   useDraggable,
   useDroppable,
-  useSensor,
-  useSensors,
   type CollisionDetection,
   type DragEndEvent,
 } from '@dnd-kit/core'
@@ -22,6 +17,7 @@ import { dayKey, fmt, lastNDays } from '../../lib/dates'
 import { byOrder, useTasks } from '../../store/tasks'
 import { useUI } from '../../store/ui'
 import { Avatar } from '../cloud/LoginScreen'
+import { liftFeedback, useDragSensors } from '../../lib/dnd'
 import { FlowBar } from './FlowBar'
 import { TaskCardBody } from './TaskCard'
 
@@ -97,7 +93,7 @@ function SharedCard({ task, me, column }: { task: Task; me: PersonId; column: Sh
         if (e.key === 'Enter') openTask(task.id)
         listeners?.onKeyDown?.(e)
       }}
-      className="cursor-grab touch-manipulation rounded-lg active:cursor-grabbing"
+      className="drag-card cursor-grab touch-manipulation rounded-lg active:cursor-grabbing"
     >
       <TaskCardBody
         task={task}
@@ -292,11 +288,7 @@ export function SharedBoard({ filter, defaults, showFlow = true, me }: Props) {
     return { ...g, finished }
   }, [tasks])
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } }),
-    useSensor(KeyboardSensor),
-  )
+  const sensors = useDragSensors()
   const active = activeId ? tasks.find((t) => t.id === activeId) : undefined
   const half = grouped.ilhan.length + grouped.sedef.length
 
@@ -317,7 +309,10 @@ export function SharedBoard({ filter, defaults, showFlow = true, me }: Props) {
       <DndContext
         sensors={sensors}
         collisionDetection={collision}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={({ active }) => {
+          liftFeedback()
+          setActiveId(String(active.id))
+        }}
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveId(null)}
         accessibility={{

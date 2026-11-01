@@ -2,12 +2,8 @@ import { useMemo, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
-  TouchSensor,
   useDraggable,
   useDroppable,
-  useSensor,
-  useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
 import { addMonths, eachDayOfInterval, endOfMonth, endOfWeek, isSameMonth, startOfMonth, startOfWeek } from 'date-fns'
@@ -16,6 +12,7 @@ import type { Task } from '../types'
 import { useTasks } from '../store/tasks'
 import { useUI } from '../store/ui'
 import { dayKey, fmt, todayKey } from '../lib/dates'
+import { liftFeedback, useDragSensors } from '../lib/dnd'
 import { PageHeader } from '../components/common/PageHeader'
 import { TaskRow } from '../components/common/TaskRow'
 
@@ -41,7 +38,7 @@ function Chip({ task, overlay }: { task: Task; overlay?: boolean }) {
         e.stopPropagation()
         openTask(task.id)
       }}
-      className={`cursor-grab truncate rounded px-1.5 py-0.5 text-xs ${chipTone(task)} ${isDragging ? 'opacity-30' : ''} ${
+      className={`drag-card cursor-grab truncate rounded px-1.5 py-0.5 text-xs ${chipTone(task)} ${isDragging ? 'opacity-30' : ''} ${
         overlay ? 'shadow-card ring-1 ring-accent' : ''
       }`}
       title={task.title}
@@ -186,10 +183,7 @@ export function CalendarView() {
   }, [tasks])
   const undated = tasks.filter((t) => !t.dueDate && t.status !== 'done')
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
-  )
+  const sensors = useDragSensors()
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveId(null)
@@ -225,7 +219,10 @@ export function CalendarView() {
           </div>
         }
       />
-      <DndContext sensors={sensors} onDragStart={({ active }) => setActiveId(String(active.id))} onDragEnd={onDragEnd} onDragCancel={() => setActiveId(null)}>
+      <DndContext sensors={sensors} onDragStart={({ active }) => {
+          liftFeedback()
+          setActiveId(String(active.id))
+        }} onDragEnd={onDragEnd} onDragCancel={() => setActiveId(null)}>
         <div className="grid gap-4 xl:grid-cols-[1fr_15rem]">
           <div className="overflow-hidden rounded-xl border-l border-t border-line">
             <div className="grid grid-cols-7">

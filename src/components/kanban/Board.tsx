@@ -2,15 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
   closestCenter,
   getFirstCollision,
   pointerWithin,
   rectIntersection,
-  useSensor,
-  useSensors,
   type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
@@ -25,6 +20,7 @@ import { FlowBar } from './FlowBar'
 import { TaskCardBody } from './TaskCard'
 import { SharedBoard } from './SharedBoard'
 import { useSharedMe } from '../../lib/cloud/shared'
+import { liftFeedback, useDragSensors } from '../../lib/dnd'
 
 type Columns = Record<Status, string[]>
 
@@ -102,16 +98,13 @@ function StatusBoard({ filter, defaults, showFlow = true }: Props) {
     [activeId],
   )
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
+  const sensors = useDragSensors(sortableKeyboardCoordinates)
 
   const findColumn = (id: string, cols = columns): Status | undefined =>
     (STATUSES as string[]).includes(id) ? (id as Status) : STATUSES.find((s) => cols[s].includes(id))
 
   const onDragStart = ({ active }: DragStartEvent) => {
+    liftFeedback()
     setActiveId(String(active.id))
     startStatus.current = findColumn(String(active.id)) ?? null
   }

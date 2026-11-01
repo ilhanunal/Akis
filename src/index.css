@@ -193,3 +193,10 @@ body {
 .bn-block-content[data-content-type='heading'] {
   font-family: var(--font-display);
 }
+
+/* Draggable cards: a long press lifts the card, so keep iOS from selecting text or opening its callout menu. */
+.drag-card {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
