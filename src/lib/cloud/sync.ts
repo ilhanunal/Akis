@@ -152,12 +152,19 @@ async function fetchWorkspace(ws: WorkspaceId) {
   const rows = data as Row[]
   applyRemote(() => {
     for (const source of SOURCES) {
+      const current = list(source)
+      const known = new Map(current.map((i) => [i.id, i]))
+      // Items that came back unchanged keep their old object, so only what really changed is redrawn.
       const fresh = rows
         .filter((r) => r.kind === source.kind && !pending.has(r.id))
-        .map((r) => r.data)
+        .map((r) => {
+          const old = known.get(r.data.id)
+          return old && JSON.stringify(old) === JSON.stringify(r.data) ? old : r.data
+        })
       // Keep local items that are still waiting to be saved.
-      const unsaved = list(source).filter((i) => pending.get(i.id)?.data)
-      setList(source, [...fresh, ...unsaved].sort((a, b) => sortKey(a).localeCompare(sortKey(b))))
+      const unsaved = current.filter((i) => pending.get(i.id)?.data)
+      const next = [...fresh, ...unsaved].sort((a, b) => sortKey(a).localeCompare(sortKey(b)))
+      if (next.length !== current.length || next.some((item, n) => item !== current[n])) setList(source, next)
     }
   })
 }
@@ -211,10 +218,14 @@ export function closeWorkspace() {
 export const hasUnsaved = () => pending.size > 0 || flushing
 
 if (typeof window !== 'undefined') {
-  // Realtime can miss events while a laptop sleeps or a phone is in the background; catch up on return.
+  // Realtime can miss events while a laptop sleeps or a phone is in the background; after a longer
+  // absence, catch up on return. A quick glance at another app keeps the live connection.
+  let hiddenAt = 0
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && workspace) void fetchWorkspace(workspace).catch(() => {})
-    if (document.visibilityState === 'hidden') void flush()
+    if (document.visibilityState === 'hidden') {
+      hiddenAt = Date.now()
+      void flush()
+    } else if (workspace && Date.now() - hiddenAt > 15_000) void fetchWorkspace(workspace).catch(() => {})
   })
   window.addEventListener('beforeunload', (e) => {
     if (!hasUnsaved()) return

@@ -32,7 +32,7 @@ function Layout() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="min-w-0 flex-1">
-        <div className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-bg/90 px-4 py-2 backdrop-blur md:hidden">
+        <div className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-bg px-4 py-2 md:hidden">
           <button onClick={() => setDrawer(true)} className="rounded-md p-1.5 hover:bg-sunken" aria-label="Menüyü aç">
             <MenuIcon className="size-5" />
           </button>

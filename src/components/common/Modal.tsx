@@ -25,7 +25,7 @@ export function Modal({ onClose, children, label, className = '', align = 'cente
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-40 flex justify-center bg-ink/25 p-4 backdrop-blur-[2px] ${
+      className={`fixed inset-0 z-40 flex justify-center bg-ink/25 p-4 ${
         align === 'top' ? 'items-start pt-[12vh]' : 'items-center'
       }`}
       onMouseDown={(e) => {

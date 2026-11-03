@@ -1,4 +1,4 @@
-import { createJSONStorage, type StateStorage } from 'zustand/middleware'
+import { createJSONStorage, type PersistStorage } from 'zustand/middleware'
 import { cloudEnabled } from './cloud/config'
 
 /**
@@ -8,10 +8,11 @@ import { cloudEnabled } from './cloud/config'
  */
 export const storage = createJSONStorage(() => localStorage)
 
-const memory: StateStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+/** Drops every write without serialising it: a page being typed in would otherwise be turned into JSON on each keystroke for nothing. */
+const discard: PersistStorage<unknown> = { getItem: () => null, setItem: () => {}, removeItem: () => {} }
 
 /**
  * Storage for tasks, pages, habits and history. In cloud mode the database is the source of truth
  * (see cloud/sync.ts), so nothing is written locally and earlier local data stays untouched for import.
  */
-export const dataStorage = cloudEnabled ? createJSONStorage(() => memory) : storage
+export const dataStorage = (cloudEnabled ? discard : storage) as typeof storage

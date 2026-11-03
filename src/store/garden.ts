@@ -48,7 +48,20 @@ interface GardenState {
 export const useGarden = create<GardenState>()((set) => ({
   rows: {},
   ready: false,
-  setAll: (rows) => set({ rows: Object.fromEntries(rows.map((r) => [r.id, r])), ready: true }),
+  // A refetch usually brings back exactly what is already here; keeping the old objects (and the old
+  // map, when nothing changed) means nothing that reads the garden has to recompute or redraw.
+  setAll: (incoming) =>
+    set((s) => {
+      const next: Record<string, CoinRow> = {}
+      let changed = !s.ready || Object.keys(s.rows).length !== incoming.length
+      for (const r of incoming) {
+        const old = s.rows[r.id]
+        const same = old && old.workspace === r.workspace && old.kind === r.kind && JSON.stringify(old.data) === JSON.stringify(r.data)
+        next[r.id] = same ? old : r
+        if (!same) changed = true
+      }
+      return changed ? { rows: next, ready: true } : s
+    }),
   put: (row) => set((s) => ({ rows: { ...s.rows, [row.id]: row } })),
   drop: (id) =>
     set((s) => {

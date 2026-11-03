@@ -28,8 +28,13 @@ async function fetchAll() {
   useGarden.getState().setAll(rows)
 }
 
+/** Switching away and straight back keeps the live connection; only a longer absence needs a catch-up. */
+const CATCH_UP_AFTER_MS = 15_000
+let hiddenAt = 0
+
 const refresh = () => {
-  if (document.visibilityState === 'visible' && channel) void fetchAll().catch(() => {})
+  if (document.visibilityState === 'hidden') hiddenAt = Date.now()
+  else if (channel && Date.now() - hiddenAt > CATCH_UP_AFTER_MS) void fetchAll().catch(() => {})
 }
 
 export async function startGarden() {

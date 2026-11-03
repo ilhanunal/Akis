@@ -108,19 +108,29 @@ body {
   transition: flex-grow 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* The stripes slide as a transform on their own layer, which the GPU handles; animating a background
+   position instead repainted the bar on every frame. 22px is one stripe period, so the loop is seamless. */
 .flow-seg[data-status='done'] {
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-seg[data-status='done']::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 -22px;
   background-image: repeating-linear-gradient(
     115deg,
     transparent 0 10px,
     rgb(255 255 255 / 0.14) 10px 20px
   );
-  background-size: 200% 100%;
-  animation: flow 6s linear infinite;
+  animation: flow 1s linear infinite;
+  will-change: transform;
 }
 
 @keyframes flow {
   to {
-    background-position: -100% 0;
+    transform: translateX(22px);
   }
 }
 
