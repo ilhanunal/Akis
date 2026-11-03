@@ -71,6 +71,7 @@ const PREF_LABELS: [keyof PushPrefs, string][] = [
   ['notes', 'Yeni not bırakılınca'],
   ['tasks', 'Ortak görevde sıra bana gelince'],
   ['evening', 'Akşam 21:00 hatırlatması'],
+  ['nudges', 'Dürtülünce'],
 ]
 
 /** Push notifications for this device: switch on or off, and which kinds. */
@@ -104,7 +105,7 @@ export function NotificationsRow() {
     }
   }
 
-  let description: React.ReactNode = "Biriniz not bırakınca, ortak görevde sıra sana gelince ve akşam 21:00'de (yapılmamış alışkanlık ya da girilmemiş adım varsa) bu cihaza bildirim gelir."
+  let description: React.ReactNode = "Biriniz not bırakınca, ortak görevde sıra sana gelince, dürtüldüğünde ve akşam 21:00'de (yapılmamış alışkanlık ya da girilmemiş adım varsa) bu cihaza bildirim gelir."
   if (iosBrowser) description = "iPhone'da bildirimler için önce Akış'ı ana ekrana ekleyip oradan açman gerekiyor (yukarıdaki adımlar)."
   else if (!supported) description = 'Bu tarayıcı bildirimleri desteklemiyor.'
   else if (denied)
@@ -143,7 +144,7 @@ export function NotificationsRow() {
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={device.prefs[key]}
+                        checked={device.prefs[key] !== false}
                         disabled={busy}
                         onChange={(e) =>
                           run(async () => setDevice(await updatePrefs(device, { ...device.prefs, [key]: e.target.checked })))
@@ -159,8 +160,8 @@ export function NotificationsRow() {
                 disabled={busy}
                 onClick={() =>
                   run(async () => {
-                    const ok = await notify({ type: 'test' })
-                    if (!ok) throw new Error('Deneme bildirimi gönderilemedi.')
+                    const res = await notify({ type: 'test' })
+                    if (!res) throw new Error('Deneme bildirimi gönderilemedi.')
                     toast('Deneme bildirimi gönderildi')
                   })
                 }

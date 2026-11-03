@@ -4,6 +4,7 @@ import { useUI } from '../../store/ui'
 import { PageTree } from './PageTree'
 import { cloudEnabled } from '../../lib/cloud/config'
 import { AccountFooter, WorkspaceSwitcher } from '../cloud/Workspace'
+import { NudgeButton } from '../cloud/Nudge'
 
 export const NAV = [
   { to: '/', label: 'Bugün', icon: Sun },
@@ -87,6 +88,7 @@ export function Sidebar() {
           <PageTree />
         </nav>
         <div className="border-t border-line px-3 py-2">
+          {cloudEnabled && <NudgeButton onDone={close} />}
           <NavLink to="/ayarlar" className={navClass} onClick={close}>
             <Settings className="size-[18px]" />
             Ayarlar

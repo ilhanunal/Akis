@@ -6,6 +6,7 @@ import { asUser, devicesOf, sendTo, type Message } from '../lib/push'
 type Event =
   | { type: 'note'; text: string }
   | { type: 'mark'; title: string; finished: boolean }
+  | { type: 'nudge'; text?: string }
   | { type: 'test' }
 
 const clip = (s: unknown, n: number) => String(s ?? '').trim().slice(0, n)
@@ -29,7 +30,7 @@ export default async (req: Request) => {
 
   const other = PEOPLE.find((p) => p.id !== me.id)!
   let target: string = other.id
-  let pref: 'notes' | 'tasks' | null
+  let pref: 'notes' | 'tasks' | 'nudges' | null
   let message: Message
   if (event.type === 'note') {
     pref = 'notes'
@@ -40,6 +41,14 @@ export default async (req: Request) => {
     message = event.finished
       ? { title: 'Ortak görev tamamlandı', body: `"${title}" görevini ikiniz de bitirdiniz.`, url: '/pano', tag: 'mark' }
       : { title: `${me.name} bir görevi yaptı`, body: `"${title}" görevinde sıra sende.`, url: '/pano', tag: 'mark' }
+  } else if (event.type === 'nudge') {
+    pref = 'nudges'
+    message = {
+      title: `${me.name} seni dürttü 👉`,
+      body: clip(event.text, 100) || "Akış'a bir göz atmak ister misin?",
+      url: '/',
+      tag: 'nudge',
+    }
   } else if (event.type === 'test') {
     target = me.id
     pref = null

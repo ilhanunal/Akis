@@ -5,7 +5,7 @@ import { VAPID_PUBLIC_KEY, type PushDevice } from './people'
 import { supabase } from './config'
 
 export type PushPrefs = PushDevice['prefs']
-export const DEFAULT_PREFS: PushPrefs = { notes: true, tasks: true, evening: true }
+export const DEFAULT_PREFS: PushPrefs = { notes: true, tasks: true, evening: true, nudges: true }
 
 export const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
 
@@ -97,23 +97,27 @@ export async function disablePush(device: PushDevice | null) {
 export type NotifyEvent =
   | { type: 'note'; text: string }
   | { type: 'mark'; title: string; finished: boolean }
+  | { type: 'nudge'; text?: string }
   | { type: 'test' }
 
-/** Fire and forget: a failed notification never gets in the way of what the user just did. */
-export async function notify(event: NotifyEvent) {
-  if (!supabase) return false
+/**
+ * Fire and forget: a failed notification never gets in the way of what the user just did.
+ * Resolves to how many devices the message reached, or null when it could not be sent at all.
+ */
+export async function notify(event: NotifyEvent): Promise<{ sent: number } | null> {
+  if (!supabase) return null
   try {
     const { data } = await supabase.auth.getSession()
     const token = data.session?.access_token
-    if (!token) return false
+    if (!token) return null
     const res = await fetch('/.netlify/functions/notify', {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
       body: JSON.stringify(event),
     })
-    return res.ok
+    return res.ok ? ((await res.json()) as { sent: number }) : null
   } catch (err) {
     console.warn('Akış: bildirim gönderilemedi', err)
-    return false
+    return null
   }
 }
